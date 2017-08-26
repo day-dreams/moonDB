@@ -25,7 +25,6 @@ public:
 private:
   map<string, string> storage;
 };
-string StorageMachine::NO_SUCH_ELE("nil");
 
 class BaseEngine {
 public:
@@ -60,7 +59,8 @@ public:
   BaseEngine &getInstance() {
     // TODO:改进到线程安全版本
     if (onlyInstance == nullptr) {
-      onlyInstance = std::make_shared<BaseEngine>();
+      auto p = new BaseEngine();
+      onlyInstance = shared_ptr<BaseEngine>(p);
     }
     return *onlyInstance;
   }
@@ -75,7 +75,5 @@ private:
   BaseEngine &operator=(const BaseEngine &) {}
   static shared_ptr<BaseEngine> onlyInstance;
 };
-const string BaseEngine::NO_SUCH_KEY(
-    "magic string,849u3qrkjijfdsf1e312e"); /* magic string,用于标识null */
 }
 #endif

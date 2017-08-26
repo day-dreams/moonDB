@@ -1,5 +1,5 @@
-#include "../../include/vm/vm.h"
-#include "../../include/opcode.h"
+#include "vm/vm.h"
+#include "opcode.h"
 
 #include <list>
 #include <mutex>
@@ -24,19 +24,8 @@ VmMessage::VmMessage(MessageType type, char *details) {
   this->details = details;
 }
 
-VmMessage::VmMessage(VmMessage &&other) {
-  this->type = other.type;
-  this->details = std::move(other.details);
-}
-
 const string &VmMessage::get_details() { return this->details; }
 const VmMessage::MessageType &VmMessage::get_type() { return this->type; }
-
-VmMessage &VmMessage::operator=(VmMessage &&other) {
-  this->type = other.type;
-  this->details = std::move(other.details);
-  return *this;
-}
 
 bool VmMessage::is_error() {
   if (type == ERROR || type == ERROR_DEL || type == ERROR_SET ||
@@ -55,16 +44,18 @@ VmMessage VirtualMachine::execute(VdbOp &operation) {
   case OPCODE::SET: {
     auto succeeded = db.add(parameters[0], parameters[1]);
     if (succeeded) {
-      return VmMessage(VmMessage::MessageType::INFO_SETSUCCEEDED, "Ok.");
+      return VmMessage(VmMessage::MessageType::INFO_SETSUCCEEDED,
+                       string("Ok."));
     } else {
-      return VmMessage(VmMessage::MessageType::ERROR_SET, "fail to set key.");
+      return VmMessage(VmMessage::MessageType::ERROR_SET,
+                       string("fail to set key."));
     }
   }
   case OPCODE::GET: {
     auto value = db.get(parameters[0]);
     if (value == BaseEngine::NO_SUCH_KEY) {
       return VmMessage(VmMessage::MessageType::ERROR_NOSUCHKEY,
-                       "key dont exist.");
+                       string("key dont exist."));
     } else {
       return VmMessage(VmMessage::MessageType::INFO, std::move(value));
     }
@@ -72,18 +63,20 @@ VmMessage VirtualMachine::execute(VdbOp &operation) {
   case OPCODE::DEL: {
     auto succeeded = db.del(parameters[0]);
     if (succeeded) {
-      return VmMessage(VmMessage::MessageType::INFO, "Ok.");
+      return VmMessage(VmMessage::MessageType::INFO, string("Ok."));
     } else {
-      return VmMessage(VmMessage::MessageType::ERROR_DEL, "fail to del key.");
+      return VmMessage(VmMessage::MessageType::ERROR_DEL,
+                       string("fail to del key."));
     }
   }
   case OPCODE::EXISTED: {
     auto existed = db.existed(parameters[0]);
     if (existed)
-      return VmMessage(VmMessage::MessageType::INFO_KEYEXIST, "key exists");
+      return VmMessage(VmMessage::MessageType::INFO_KEYEXIST,
+                       string("key exists"));
     else
       return VmMessage(VmMessage::MessageType::INFO_KEYNOTEXIST,
-                       "key not exist");
+                       string("key not exist"));
   }
   }
 }

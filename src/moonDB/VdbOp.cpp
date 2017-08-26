@@ -1,4 +1,4 @@
-#include "../include/VdbOp.h"
+#include "VdbOp.h"
 
 namespace moon {
 void VdbOp::set_opcode(u8 &op) { this->opcode = op; }

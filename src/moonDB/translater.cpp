@@ -1,5 +1,5 @@
-#include "../include/translater.h"
-#include "../include/types.h"
+#include "translater.h"
+#include "types.h"
 
 #include <cstdlib>
 #include <cstring>/* for strlen */

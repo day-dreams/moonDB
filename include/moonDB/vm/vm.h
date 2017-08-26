@@ -1,8 +1,8 @@
 #ifndef VM
 #define VM
 
-#include "../VdbOp.h"
-#include "../db/engine.h"
+#include "VdbOp.h"
+#include "db/engine.h"
 
 #include <list>
 #include <mutex>
@@ -36,8 +36,6 @@ public:
   VmMessage(MessageType type, string &details);  /* constructor */
   VmMessage(MessageType type, string &&details); /* constructor,steal details */
   VmMessage(MessageType type, char *details);    /* constructor */
-  VmMessage(VmMessage &&other);                  /* copy constructor */
-  VmMessage &operator=(VmMessage &&other);       /* copy assignment operator */
   bool is_error();                               /* 判断是否为error消息*/
   const string &get_details();                   /* 获取details */
   const MessageType &get_type();                 /* 获取type */

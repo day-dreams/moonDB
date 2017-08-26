@@ -1,13 +1,15 @@
-#include "../../include/db/engine.h"
-#include "../../include/easylogging++.h"
+#include "db/engine.h"
 
+#include <glog/logging.h>
 #include <string>
-
-INITIALIZE_EASYLOGGINGPP
 
 using std::string;
 
 namespace moon {
+
+string StorageMachine::NO_SUCH_ELE("nil");
+const string BaseEngine::NO_SUCH_KEY(
+    "magic string,849u3qrkjijfdsf1e312e"); /* magic string,用于标识null */
 
 bool StorageMachine::existed(string &key) {
   return storage.count(key) == 0 ? false : true;
