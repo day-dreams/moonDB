@@ -1,0 +1,28 @@
+// 主体的程序架构图
+digraph structure{
+
+    {rank=same;Server,Client};
+
+    subgraph DBmodel{
+    Translater [label="Translater"];
+        label="数据库模型";
+        VM  [label="Virual machine"];
+        DB  [label="Database engine"];
+
+        Translater->VM [label="编译:VdbOp"];
+        VM->DB         [label="调用:functions"];
+    }   
+
+    DB->VM          [label="返回:result"];
+    VM->Translater  [label="返回:message"];
+    subgraph CSmodel{
+        label="CS模型";
+        Server [taillabel="Server"];
+        Client [label="Client"]
+    
+        Client->Server [label="Request"];
+        Server->Client [label="Response"];
+    }
+    Server->Translater [label="转发:protocol chars"];
+    Translater->Server      [label="返回:protocol chars"];
+}

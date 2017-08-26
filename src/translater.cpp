@@ -1,0 +1,87 @@
+#include "../include/translater.h"
+#include "../include/types.h"
+
+#include <cstdlib>
+#include <cstring>/* for strlen */
+#include <string>
+
+using std::string;
+using std::to_string;
+
+namespace moon {
+string Translater::message_to_resp_response(VmMessage &message) {
+  /* words作为函数局部对象,返回时会被编译器优化,避免复制 */
+  if (message.is_error()) { /* error */
+    auto words = "-" + to_string(message.get_type()) + " " +
+                 message.get_details() + "\r\n";
+    return words;
+  } else if (message.get_type() ==
+             VmMessage::MessageType::INTEGERS) { /* integers */
+    auto words = ":" + message.get_details() + "\r\n";
+    return words;
+  } else if (message.get_type() == VmMessage::MessageType::INFO) { /* info */
+    auto words = "+" + message.get_details() + "\r\n";
+    return words;
+  } else {
+    /* TODO: bulk strings $,arrays **/
+    return "TODO";
+  }
+}
+
+u32 str_to_int(const char *begin, const char *end) { /* base=10 */
+  int x;
+  while (begin <= end) {
+    x = x * 10 + (*begin - '0');
+    ++begin;
+  }
+  return x;
+}
+
+list<VdbOp> resp_request_to_vdbop(const char *const request) {
+  /* 这里的输入参数是c_str,因为sockets只能支持c_str,再转化为string就太复杂了 */
+  list<VdbOp> r;
+  auto index = 0;
+  u32 array_len = 0;
+  bool is_reading_opcode = true;
+  while (request[index] != '\0') {
+    switch (request[index]) {
+    case '*': { /* head of an array */
+      auto begin = index + 1;
+      auto end = begin;
+      while (request[end] != '\r') {
+        ++end;
+      }
+      // now the interger is at [begin,end], end+1 is at '\r'
+      array_len = str_to_int(request + begin, request + end);
+      index = end + 2; /* skip '\r\n' */
+      /* now index is at begging of a command,or '\0'*/
+      break;
+    }
+    case '$': { /* readign some part of a command */
+      auto begin = index + 1;
+      auto end = begin;
+      while (request[end] != '\r') {
+        ++end;
+      }
+      // now integer is at [begin,end], end+1 is at '\r'
+      auto bulk_str_len = str_to_int(request + begin, request + end);
+      index = end + 2; // now index is at a new bulk string(size:bulk_str_len)
+      if (is_reading_opcode) {
+        is_reading_opcode = false;
+        r.push_back(VdbOp());
+        auto opcode = OPCODE::str_to_opcode(request + index,
+                                            request + index + bulk_str_len - 1);
+      } else {
+        is_reading_opcode = true;
+        auto str = request + index;
+        r.back().add_parameters(string(str, bulk_str_len));
+      }
+      index = index + bulk_str_len +
+              2; // now index is at a new bulk string, or '\0'
+      break;
+    }
+    }
+  }
+  return r;
+}
+}
