@@ -5,6 +5,7 @@ SET(moonDB_SRCS
     db/engine.cpp
     translater.cpp
     VdbOp.cpp
+    opcode.cpp
 )
 
 

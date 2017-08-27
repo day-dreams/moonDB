@@ -13,7 +13,7 @@ const u8 GET = 1;     /* [get key]，获取key的value */
 const u8 DEL = 2;     /* [del key]，删除key */
 const u8 EXISTED = 3; /* [existed key]，查询key是否存在 */
 
-u8 str_to_opcode(const char *begin, const char *end);
+u8 str_to_opcode(const char *begin, const char *end, i32 &size_read);
 }
 }
 

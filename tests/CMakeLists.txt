@@ -1,4 +1,4 @@
-project(moonDB_Test)
+project(moonDB_TEST)
 
 cmake_minimum_required(VERSION 3.5)
 
@@ -13,10 +13,9 @@ link_directories(
     ../build/lib
 )
 
-# link_libraries(moonDB)
 
 add_executable(test_demo test_translater.cpp )
 
 target_link_libraries(test_demo glog)
-target_link_libraries(test_demo moonDB)
+target_link_libraries(test_demo libmoonDB.a)
 
