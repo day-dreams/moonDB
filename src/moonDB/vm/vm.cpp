@@ -46,9 +46,9 @@ bool VmMessage::is_info() {
 }
 
 VmMessage VirtualMachine::execute(VdbOp &operation) {
-  cout << "42:in_multy_execute:" << in_multy_execute << '\n';
+  // cout << "42:in_multy_execute:" << in_multy_execute << '\n';
   unique_lock<mutex> guard(db_mutex, std::defer_lock);
-  cout << "42:in_multy_execute:" << in_multy_execute << '\n';
+  // cout << "42:in_multy_execute:" << in_multy_execute << '\n';
   if (!in_multy_execute)
     guard.lock();
   auto parameters = operation.get_parameters();
@@ -96,7 +96,7 @@ VmMessage VirtualMachine::execute(VdbOp &operation) {
 list<VmMessage> VirtualMachine::execute(list<VdbOp> &operations) {
   lock_guard<mutex> guard(in_multy_execute_mutex);
   in_multy_execute = true;
-  cout << "89:in_multy_execute:" << in_multy_execute << '\n';
+  // cout << "89:in_multy_execute:" << in_multy_execute << '\n';
   list<VmMessage> r;
   for (auto &op : operations) {
     auto message = execute(op);

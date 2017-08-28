@@ -31,5 +31,35 @@ int main(int argc, char **argv) {
       cout << words;
     }
   }
+  {
+    auto existed = "*1\r\n$7\r\nEXISTED\r\n$4\r\nname\r\n";
+
+    auto opeations = t.resp_request_to_vdbop(existed);
+    auto messages = vm.execute(opeations);
+    for (auto &message : messages) {
+      auto words = t.message_to_resp_response(message);
+      cout << words;
+    }
+  }
+  {
+    auto del = "*1\r\n$3\r\nDEL\r\n$4\r\nname\r\n";
+
+    auto opeations = t.resp_request_to_vdbop(del);
+    auto messages = vm.execute(opeations);
+    for (auto &message : messages) {
+      auto words = t.message_to_resp_response(message);
+      cout << words;
+    }
+  }
+  {
+    auto existed = "*1\r\n$7\r\nEXISTED\r\n$4\r\nname\r\n";
+
+    auto opeations = t.resp_request_to_vdbop(existed);
+    auto messages = vm.execute(opeations);
+    for (auto &message : messages) {
+      auto words = t.message_to_resp_response(message);
+      cout << words;
+    }
+  }
   return 0;
 }
