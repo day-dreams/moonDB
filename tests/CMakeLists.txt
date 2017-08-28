@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 
 SET(moonDB_DIR ..)
 SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_FLAGS -g)
 
 include_directories(
     ../include/moonDB/
@@ -14,8 +15,8 @@ link_directories(
 )
 
 
-add_executable(test_demo test_translater.cpp )
+add_executable(demo.out test_translater.cpp )
 
-target_link_libraries(test_demo glog)
-target_link_libraries(test_demo libmoonDB.a)
+target_link_libraries(demo.out glog)
+target_link_libraries(demo.out libmoonDB.a)
 

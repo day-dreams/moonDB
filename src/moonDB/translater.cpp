@@ -35,7 +35,7 @@ i32 str_to_int(const char *begin, const char *end, i32 &size_read) {
     base=10;
     如果遇到非数字字符串,退出
    */
-  i32 x;
+  i32 x = 0;
   size_read = 0;
   while (begin != end && *begin <= '9' && *begin >= '0') {
     ++size_read;
