@@ -14,8 +14,10 @@ link_directories(
     ../build/lib
 )
 
+# SET(TEST_SRC test_translater.cpp)
+SET(TEST_SRC test_vm.cpp)
 
-add_executable(demo.out test_translater.cpp )
+add_executable(demo.out ${TEST_SRC} )
 
 target_link_libraries(demo.out glog)
 target_link_libraries(demo.out libmoonDB.a)

@@ -14,15 +14,15 @@ namespace moon {
 string Translater::message_to_resp_response(VmMessage &message) {
   /* words作为函数局部对象,返回时会被编译器优化,避免复制 */
   if (message.is_error()) { /* error */
-    auto words = "-" + to_string(message.get_type()) + " " +
+    auto words = "- " + to_string(message.get_type()) + " " +
                  message.get_details() + "\r\n";
     return words;
   } else if (message.get_type() ==
              VmMessage::MessageType::INTEGERS) { /* integers */
-    auto words = ":" + message.get_details() + "\r\n";
+    auto words = ": " + message.get_details() + "\r\n";
     return words;
-  } else if (message.get_type() == VmMessage::MessageType::INFO) { /* info */
-    auto words = "+" + message.get_details() + "\r\n";
+  } else if (message.is_info()) { /* info */
+    auto words = "+ " + message.get_details() + "\r\n";
     return words;
   } else {
     /* TODO: bulk strings $,arrays **/

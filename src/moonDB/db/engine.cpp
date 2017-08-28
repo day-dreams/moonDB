@@ -33,6 +33,8 @@ string &StorageMachine::get(string &key) {
     return ite->second;
 }
 
+shared_ptr<BaseEngine> BaseEngine::onlyInstance(new BaseEngine());
+
 bool BaseEngine::add(string &key, string &value) {
   auto succeeded = storage.add(key, value);
   if (succeeded)

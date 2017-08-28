@@ -5,9 +5,11 @@
 #include "db/engine.h"
 
 #include <list>
+#include <memory>
 #include <mutex>
 #include <string>
 
+using std::shared_ptr;
 using std::string;
 using std::mutex;
 using std::list;
@@ -37,8 +39,9 @@ public:
   VmMessage(MessageType type, string &&details); /* constructor,steal details */
   VmMessage(MessageType type, char *details);    /* constructor */
   bool is_error();                               /* 判断是否为error消息*/
-  const string &get_details();                   /* 获取details */
-  const MessageType &get_type();                 /* 获取type */
+  bool is_info();
+  const string &get_details();   /* 获取details */
+  const MessageType &get_type(); /* 获取type */
 private:
   MessageType type;
   string details;
@@ -54,9 +57,10 @@ public:
   list<VmMessage>
   execute(list<VdbOp>
               &operations); /*保证本次operations是原子操作，执行操作，返回消息*/
+  VirtualMachine() { this->db = BaseEngine::getInstance(); }
 
 private:
-  BaseEngine db;
+  shared_ptr<BaseEngine> db;
   mutex db_mutex;                /* 线程安全 */
   bool in_multy_execute = false; /* 由execute函数负责修改 */
   mutex in_multy_execute_mutex;  /* 线程安全 */

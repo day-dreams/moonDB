@@ -56,13 +56,13 @@ public:
   /*
     获取单例
     */
-  BaseEngine &getInstance() {
+  static shared_ptr<BaseEngine> getInstance() {
     // TODO:改进到线程安全版本
     if (onlyInstance == nullptr) {
       auto p = new BaseEngine();
       onlyInstance = shared_ptr<BaseEngine>(p);
     }
-    return *onlyInstance;
+    return onlyInstance;
   }
 
 private:
