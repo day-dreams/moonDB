@@ -1,8 +1,13 @@
 
 这里是一些todo
 
-|tasks|version|status|details|create date|finish date|
-|-|-|-|-|-|-|
-|完成基本的数据库引擎|0.1|完成测试|add，get，del功能|20170817|20170828|
-|完成server部分|0.1|-|-|20170817|-|
-|完成client部分|0.1|-|-|20170817|-|
+|rank|tasks|version|status|details|create date|finish date|
+|-|-|-|-|-|-|-|
+|1|完成基本的数据库引擎|0.1|完成测试|add，get，del功能|20170817|20170828|
+|2|完成server部分(阻塞io)|0.1|-|-|20170829|-|
+|3|完成client部分(命令行版本)|0.1|-|-|20170829|-|
+|4|完成server部分(非阻塞io)|0.2|-|-|20170829|-|
+|5|完成server部分(io复用-select)|0.3|-|-|20170829|-|
+|6|完成server部分(io复用-poll)|0.4|-|-|20170829|-|
+|6|完成server部分(io复用-epoll)|0.5|-|-|20170829|-|
+|6|完成server部分(时间循环)|0.6|-|-|20170829|-|
