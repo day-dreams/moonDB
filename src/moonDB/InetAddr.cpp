@@ -8,8 +8,8 @@ Ipv4Addr::Ipv4Addr(const char *const ip, u16 port) {
   /* 暂时不考虑抛出异常 */
   this->addr.sin_port = htons(port);
 }
-Ipv4Addr::Ipv4Addr(const sockaddr *const address) {
-  this->addr = *(sockaddr_in *)address;
+Ipv4Addr::Ipv4Addr(const sockaddr &address) {
+  this->addr = *(sockaddr_in *)&address;
 }
 
 sockaddr Ipv4Addr::convert_to_sockaddr() {
