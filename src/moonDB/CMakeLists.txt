@@ -6,6 +6,7 @@ SET(moonDB_SRCS
     translater.cpp
     VdbOp.cpp
     opcode.cpp
+    InetAddr.cpp
 )
 
 
