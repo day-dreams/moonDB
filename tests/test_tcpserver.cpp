@@ -7,8 +7,10 @@ using namespace std;
 using namespace moon;
 
 string echo(const char *words, Ipv4Addr &addr) {
-  string x = addr.get_ip() + ":" + to_string(addr.get_port()) + "  " + words;
-  return x;
+  cout << "from client:"
+       << addr.get_ip() + ":" + to_string(addr.get_port()) + " " + words
+       << endl;
+  return words;
 }
 
 int main(int argc, char **argv) {

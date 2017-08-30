@@ -2,6 +2,12 @@
 
 namespace moon {
 
+Ipv4Addr::Ipv4Addr() {
+  this->addr.sin_family = AF_INET;
+  auto ip = "0.0.0.0";
+  auto succeed = inet_pton(AF_INET, ip, &this->addr.sin_addr);
+  this->addr.sin_port = htons(8000);
+}
 Ipv4Addr::Ipv4Addr(const char *const ip, u16 port) {
   this->addr.sin_family = AF_INET;
   auto succeed = inet_pton(AF_INET, ip, &this->addr.sin_addr);

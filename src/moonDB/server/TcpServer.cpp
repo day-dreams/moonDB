@@ -1,6 +1,7 @@
 #include "server/TcpServer.h"
 #include "InetAddr.h"
 #include <arpa/inet.h>
+#include <cstring>
 #include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
@@ -46,6 +47,7 @@ int TcpServer::start_loop() {
   int client_sock;
   while (true) {
     // 接受连接
+    memset((void *)buffer, 0, buffer_size);
     client_sock = accept(server_sock, &_client_addr, &size);
     Ipv4Addr client_addr(_client_addr);
     // 接受数据

@@ -17,10 +17,11 @@ link_directories(
 # SET(TEST_SRC test_translater.cpp)
 # SET(TEST_SRC test_vm.cpp)
 # SET(TEST_SRC test_inetaddr.cpp)
-SET(TEST_SRC test_tcpserver.cpp)
+# SET(TEST_SRC test_tcpserver)
+SET(TEST_SRC test_tcpclient)
 
-add_executable(demo.out ${TEST_SRC} )
+add_executable(${TEST_SRC}.out ${TEST_SRC}.cpp )
 
-target_link_libraries(demo.out glog)
-target_link_libraries(demo.out libmoonDB.a)
+target_link_libraries(${TEST_SRC}.out glog)
+target_link_libraries(${TEST_SRC}.out libmoonDB.a)
 
