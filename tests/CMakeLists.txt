@@ -16,7 +16,8 @@ link_directories(
 
 # SET(TEST_SRC test_translater.cpp)
 # SET(TEST_SRC test_vm.cpp)
-SET(TEST_SRC test_inetaddr.cpp)
+# SET(TEST_SRC test_inetaddr.cpp)
+SET(TEST_SRC test_tcpserver.cpp)
 
 add_executable(demo.out ${TEST_SRC} )
 

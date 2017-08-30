@@ -26,7 +26,7 @@ public:
     ERROR_SocketSendFail,
   };
 
-  typedef function<string(const char *const, const Ipv4Addr &addr)>
+  typedef function<string(const char *const, Ipv4Addr &addr)>
       CallbackType;        /* 回调函数类型 */
   int start_loop();        /* 开启服务器循环 */
   void set_port(int port); /* 设置监听端口 */
@@ -41,13 +41,16 @@ public:
   */
   void set_on_request_recv(const CallbackType &callback);
 
+  static string decode_state_code(int code);
+
 private:
   u16 port_to_listen = 8000;
   CallbackType callback;
   int server_sock;         /* 监听套接字 */
   int max_pending_con = 5; /* 最大排队连接数 */
   int buffer_size = 1024;
-  bool address_reuse = false;
+  bool address_reuse = true;
+  bool port_reuse = true;
   bool ignore_recv_error = true;
   bool ignore_close_error = true;
   bool ignore_send_error = false;
