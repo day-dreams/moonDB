@@ -1,0 +1,36 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+    },
+    "tasks": [
+        {
+            "taskName": "build the demo",
+            "type": "shell",
+            "command": "cd tests/build;make;",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "taskName": "clean the demo",
+            "type": "shell",
+            "command": "cd tests/build;make clean;"
+        },
+        {
+            "taskName": "build",
+            "type": "shell",
+            "command": "cd build;cmake ..;make;"
+        },
+        {
+            "taskName": "clean build",
+            "type": "shell",
+            "command": "cd build;make clean"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.h": "cpp",
+        "system_error": "cpp",
+        "string": "cpp",
+        "array": "cpp",
+        "initializer_list": "cpp",
+        "iostream": "cpp",
+        "mutex": "cpp",
+        "fstream": "cpp",
+        "bitset": "cpp",
+        "utility": "cpp"
+    }
+}
