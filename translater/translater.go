@@ -5,9 +5,10 @@ Package translater 实现了一个翻译类，提供VmMessage向Resp协议，Res
 package translater
 
 import (
-	"fmt"
+	"strconv"
 
 	"../operation"
+	"../vm"
 )
 
 // ToOperation 将Resp协议字符串转换成operation
@@ -18,26 +19,46 @@ func ToOperation(resp string) []operation.Operation {
 	var bulkStr, op string
 	commandNum, newBegin = getNumber(resp, begin)
 	newBegin += 2 /* index现在指向第一个bulkstring的$符号 */
-	// operations := make([]operation.Operation, 2)
+	ret := make([]operation.Operation, 0, 2)
 	for i := 0; commandNum > i; i++ {
 		// 每次解析出一个操作，包括类型和参数
-		newBegin += 1
+		newBegin++
 		bulkStrLen, newBegin = getNumber(resp, newBegin)
 		newBegin += 2
 		op, newBegin = getBulkString(resp, newBegin, bulkStrLen)
+		operat := operation.Operation{}
+		operat.Type = operation.GetOpType(&op)
 		newBegin += 2
-		fmt.Println(op)
 		bulkStrNum = operation.GetParaNum(&op)
 		for j := 0; j < bulkStrNum; j++ {
-			newBegin += 1
+			newBegin++
 			bulkStrLen, newBegin = getNumber(resp, newBegin)
 			newBegin += 2
 			bulkStr, newBegin = getBulkString(resp, newBegin, bulkStrLen)
+			operat.Parameters = append(operat.Parameters, bulkStr)
 			newBegin += 2
-			fmt.Println(bulkStr)
 		}
+		ret = append(ret, operat)
 	}
-	return make([]operation.Operation, 1)
+	return ret
+}
+
+// VmMessageToResp 将来自虚拟机的消息转换成Resp协议字符串
+func VmMessageToResp(message *vm.VmMessage) string {
+	switch vm.Type {
+	case operation.SimpleString:
+		return "+" + message.Details + "\r\n"
+	case operation.ERROR:
+		return "-" + message.Details + "\r\n"
+	case operation.Integer:
+		return ":" + message.Details + "\r\n"
+	case operation.BulkString:
+		return "$" + strconv.Itoa(len(message.Details)) + "\r\n" + message.Details + "\r\n"
+	case operation.Array:
+		return ""
+	default:
+		return ""
+	}
 }
 
 //从resp的特定下标开始读取一个数字，并返回新的下标;index指向数字第一位

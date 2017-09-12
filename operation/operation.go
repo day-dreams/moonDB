@@ -40,3 +40,19 @@ func GetParaNum(op *string) int {
 		return -1
 	}
 }
+
+//GetOpType 返回操作的枚举类型
+func GetOpType(op *string) int {
+	switch *op {
+	case "SET":
+		return SET
+	case "GET":
+		return GET
+	case "DEL":
+		return DEL
+	case "EXISTED":
+		return EXISTED
+	default:
+		return PingPong
+	}
+}
