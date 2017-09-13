@@ -8,11 +8,11 @@ import (
 	"strconv"
 
 	"../operation"
-	"../vm"
+	"../vmMessage"
 )
 
-// ToOperation 将Resp协议字符串转换成operation
-func ToOperation(resp string) []operation.Operation {
+// RespToOperation 将Resp协议字符串转换成operation
+func RespToOperation(resp string) []operation.Operation {
 	// fmt.Println(resp)
 	begin := 1 /* 跳过 * 符号*/
 	var newBegin, bulkStrLen, bulkStrNum, commandNum int
@@ -44,17 +44,17 @@ func ToOperation(resp string) []operation.Operation {
 }
 
 // VmMessageToResp 将来自虚拟机的消息转换成Resp协议字符串
-func VmMessageToResp(message *vm.VmMessage) string {
-	switch vm.Type {
-	case operation.SimpleString:
+func VmMessageToResp(message vmMessage.VMMessage) string {
+	switch message.MessageType {
+	case vmMessage.SimpleString:
 		return "+" + message.Details + "\r\n"
-	case operation.ERROR:
+	case vmMessage.ERROR:
 		return "-" + message.Details + "\r\n"
-	case operation.Integer:
+	case vmMessage.Integer:
 		return ":" + message.Details + "\r\n"
-	case operation.BulkString:
+	case vmMessage.BulkString:
 		return "$" + strconv.Itoa(len(message.Details)) + "\r\n" + message.Details + "\r\n"
-	case operation.Array:
+	case vmMessage.Array:
 		return ""
 	default:
 		return ""
