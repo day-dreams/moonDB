@@ -1,8 +1,13 @@
 package main
 
-import "server"
+import (
+	"os"
+	"server"
+	"strconv"
+)
 
 func main() {
-	dbServer := server.GenerateTCPServer(8080, "0.0.0.0", server.Echo)
+	port, _ := strconv.Atoi(os.Args[1])
+	dbServer := server.GenerateTCPServer(port, "0.0.0.0", server.Echo)
 	dbServer.Run()
 }

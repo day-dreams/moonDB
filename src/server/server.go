@@ -10,13 +10,24 @@ import (
 )
 
 // CallbackT 是Server的callback类型
-type CallbackT func([]byte, net.Conn)
+type CallbackT func(net.Conn)
 
 // Echo 是一个默认的CallbackT类型的回调函数
-func Echo(request []byte, conn net.Conn) {
-	_, error := conn.Write(request)
-	if error != nil {
-		log.Print(error)
+func Echo(conn net.Conn) {
+	readCache := make([]byte, 1024)
+	for {
+		n, error := conn.Read(readCache)
+		readCache = readCache[0:n]
+		if error != nil {
+			log.Print(error)
+			continue
+		} else {
+			log.Print("recv ", n, " bytes from ", conn.RemoteAddr(), "requests: ", string(readCache))
+		}
+		_, error = conn.Write(readCache)
+		if error != nil {
+			log.Print(error)
+		}
 	}
 }
 
@@ -45,18 +56,11 @@ func (server *TCPServer) Run() {
 	defer listner.Close()
 	for {
 		conn, error := listner.Accept()
-		defer conn.Close()
+		// defer conn.Close()
 		if error != nil {
 			log.Print(error)
-		}
-		buffer := make([]byte, 1024)
-		n, error := conn.Read(buffer)
-		if error != nil {
-			log.Print(error)
-			continue
 		} else {
-			log.Printf("recv %4d bytes from %s\n", n, conn.RemoteAddr())
-			server.Callback(buffer, conn)
+			go server.Callback(conn)
 		}
 	}
 
