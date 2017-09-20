@@ -7,10 +7,10 @@ package vm
 import (
 	"sync"
 
-	"../db"
-	"../operation"
-	"../translater"
-	"../vmMessage"
+	"db"
+	"operation"
+	"translater"
+	"vmMessage"
 )
 
 // VirtualMachine 是虚拟机类

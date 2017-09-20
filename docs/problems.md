@@ -5,6 +5,7 @@
     - [1.2. 操作系统如何打开并读取一个文件？](#12-操作系统如何打开并读取一个文件)
 - [2. 语言问题](#2-语言问题)
     - [2.1. golang的struct初始化问题](#21-golang的struct初始化问题)
+    - [golang的工作空间设置](#golang的工作空间设置)
 
 <!-- /TOC -->
 # 1. 根本性问题
@@ -35,3 +36,14 @@ open()的功能是**Given  a pathname for a file, open() returns a file descript
 ## 2.1. golang的struct初始化问题
 
 我目前没有什么好的想法，也懒得去找类似构造函数的手法。我觉工厂函数正好满足需求，只不过多了几行代码而已，没什么。
+
+## golang的工作空间设置
+
+每个项目都需要需要设置gopath,并且严格按照规定来组织目录结构.
+
+vscode的默认golang配置下,会在gopath里安装各种工具.设置好gopath后,vscode会提示自动安装.这里放上我本地的目录结构截图.
+
+![](./project-tree.png)
+
+参考链接:[GOPATH与工作空间](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/01.2.md)
+

@@ -1,14 +1,13 @@
 /*
 Package translater 实现了一个翻译类，提供VmMessage向Resp协议，Resp协议向VitrualMachine.Operations的转换
 */
-
 package translater
 
 import (
 	"strconv"
 
-	"../operation"
-	"../vmMessage"
+	"operation"
+	"vmMessage"
 )
 
 // RespToOperation 将Resp协议字符串转换成operation
