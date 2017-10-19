@@ -26,8 +26,8 @@ public:
     ERROR_SocketSendFail,
   };
 
-  typedef function<string(const char *const, Ipv4Addr &addr)>
-      CallbackType;        /* 回调函数类型 */
+  typedef function<void(int, Ipv4Addr)>
+      CallbackType;        /* void func(int client_sock,Ipv5Addr client_addr ) */
   int start_loop();        /* 开启服务器循环 */
   void set_port(int port); /* 设置监听端口 */
   void set_max_pendding(int num);
