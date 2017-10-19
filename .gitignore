@@ -2,3 +2,6 @@
 build
 *.out
 core
+*.a
+bin
+debug
