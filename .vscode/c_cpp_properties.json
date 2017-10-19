@@ -45,7 +45,7 @@
                     "/usr/lib/clang/3.8.0/include",
                     "/usr/include",
                     "/usr/include/x86_64-linux-gnu",
-                    "${workspaceRoot}/include",
+                    "${workspaceRoot}/include/moonDB/",
                     "${workspaceRoot}"
                 ],
                 "limitSymbolsToIncludedHeaders": true,

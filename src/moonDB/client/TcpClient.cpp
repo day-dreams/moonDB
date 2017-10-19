@@ -1,5 +1,6 @@
 #include "client/TcpClient.h"
 
+#include<cstdlib>
 #include <cstring>
 #include <string>
 #include <sys/socket.h>
@@ -43,7 +44,8 @@ int TcpClient::send_request(string words) {
 }
 
 char *TcpClient::create_buffer() {
-  auto r = new char[buffer_size];
+  // auto r = new char[buffer_size];
+  auto r=(char*)malloc(buffer_size);
   return r;
 }
 
@@ -52,6 +54,6 @@ string TcpClient::recv_response() {
     buffer = create_buffer();
   memset((void *)buffer, 0, buffer_size);
   auto size = recv(sock_fd, buffer, buffer_size, 0);
-  return string(buffer, buffer + size);
+  return string(buffer);
 }
 }

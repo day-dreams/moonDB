@@ -1,16 +1,24 @@
 #include "InetAddr.h"
 #include "server/TcpServer.h"
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <string>
+#include <sys/socket.h>
+#include <unistd.h>
 using namespace std;
 using namespace moon;
 
-string echo(const char *words, Ipv4Addr &addr) {
+void echo(int clientscok, Ipv4Addr addr) {
+  char buffer[1024];
+  memset(buffer, '\0', 1024);
+  auto n = recv(clientscok, buffer,   1024, 0);
   cout << "from client:"
-       << addr.get_ip() + ":" + to_string(addr.get_port()) + " " + words
+       << addr.get_ip() + ":" + to_string(addr.get_port()) + " " +
+              string(buffer)
        << endl;
-  return words;
+  send(clientscok, buffer, n, 0);
+  close(clientscok);
 }
 
 int main(int argc, char **argv) {
