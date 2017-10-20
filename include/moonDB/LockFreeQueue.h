@@ -1,11 +1,13 @@
 #ifndef LOCKFREEQUEUE
 #define LOCKFREEQUEUE
 
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <semaphore.h>
 using std::queue;
 using std::mutex;
+using std::shared_ptr;
 
 namespace moon {
 /*
@@ -32,6 +34,11 @@ public:
     pop 从队列中取出一个元素,如果队列为空则陷入等待
   */
   T pop();
+
+  /*
+    pop 尝试从队列中取出一个元素,如果队列为空则立即返回
+  */
+  shared_ptr<T> try_pop();
 
   /*
     size 返回队列元素个数

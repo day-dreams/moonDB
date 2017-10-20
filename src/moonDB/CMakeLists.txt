@@ -8,6 +8,8 @@ SET(moonDB_SRCS
     opcode.cpp
     InetAddr.cpp
     server/TcpServer.cpp
+    server/worker.cpp
+    server/server.cpp
     client/TcpClient.cpp
 )
 
