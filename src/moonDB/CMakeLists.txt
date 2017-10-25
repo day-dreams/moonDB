@@ -11,6 +11,7 @@ SET(moonDB_SRCS
     server/worker.cpp
     server/server.cpp
     client/TcpClient.cpp
+    logging.cpp
 )
 
 

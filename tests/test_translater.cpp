@@ -1,7 +1,6 @@
 #include "translater.h"
 #include "vm/vm.h"
 
-#include <glog/logging.h>
 #include <iomanip>
 #include <iostream>
 using namespace std;
@@ -9,7 +8,8 @@ using namespace moon;
 
 void resp_to_vdbop() {
   Translater t;
-  auto command = "*1\r\n$3\r\nGET\r\n$5\r\nhello\r\n$5\r\nworld\r\n";
+  // auto command = "*1\r\n$3\r\nGET\r\n$5\r\nhello\r\n$5\r\nworld\r\n";
+  auto command = "34534dfsf";
   auto x = t.resp_request_to_vdbop(command);
   for (auto &op : x) {
     cout << "opcode:" << char('0' + op.get_opcode()) << "| ";
@@ -29,7 +29,7 @@ void dbmessage_to_resp() {
 }
 
 int main(int argc, char **argv) {
-  google::InitGoogleLogging(argv[0]);
+  resp_to_vdbop();
   dbmessage_to_resp();
   return 0;
 }

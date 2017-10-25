@@ -37,11 +37,11 @@ class ClientSock {
 public:
   ClientSock();
   ClientSock(int sock);
-  ~ClientSock();
 
   int get_sock();                         /* get internal sockfd */
   bool is_timeout(const seconds &period); /* timeout or not */
   void refresh_timeout();                 /* reset last refresh time */
+  void closesock();                       /* close the socket */
 
 private:
   int sock_fd;                                /* 用户socket描述符 */
