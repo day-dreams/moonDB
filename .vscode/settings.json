@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "mutex": "cpp",
+        "chrono": "cpp",
+        "fstream": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "*.tcc": "cpp",
+        "slist": "cpp"
+    }
+}

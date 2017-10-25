@@ -4,3 +4,4 @@ core
 *.a
 bin
 debug
+log.txt
