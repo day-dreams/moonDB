@@ -1,6 +1,7 @@
 # moonDB
 
-version 0.1
+version 0.2
 
 * 支持基本的键值型操作(set,get,del,exists)
-* 服务器端采用阻塞式IO模型
+* 服务器端采用IO复用模型
+* 尚未完成次版本
