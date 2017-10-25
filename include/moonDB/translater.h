@@ -27,10 +27,19 @@ class Translater {
     VmMessages -> resp(response)
   */
 public:
-  string message_to_resp_response(
-      VmMessage &message); /* convert message from vm to resp(response) */
-  list<VdbOp> resp_request_to_vdbop(
-      const char *const request); /* convert resp(request) to Vdbops */
+  /*
+     convert message from vm to resp(response)
+  */
+  string message_to_resp_response(VmMessage &message);
+
+  /*
+   convert resp(request) to Vdbops
+  */
+  list<VdbOp> resp_request_to_vdbop(const char *const request);
+
+  /* TODO:
+    错误的resp协议字符串输入的处理逻辑
+  */
 };
 }
 

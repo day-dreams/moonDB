@@ -61,4 +61,3 @@ void _log(string detail, string filename, int loglevel, int linenum) {
 }
 }
 }
-}

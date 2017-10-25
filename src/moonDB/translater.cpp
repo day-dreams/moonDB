@@ -1,6 +1,6 @@
 #include "translater.h"
+#include "logging.h"
 #include "types.h"
-
 #include <cstdlib>
 #include <cstring>/* for strlen */
 #include <iostream>
@@ -9,6 +9,7 @@
 using std::cout;
 using std::string;
 using std::to_string;
+using namespace moon::logging;
 
 namespace moon {
 string Translater::message_to_resp_response(VmMessage &message) {
@@ -93,6 +94,12 @@ list<VdbOp> Translater::resp_request_to_vdbop(const char *const request) {
       index = index + bulk_str_len +
               2; // now index is at a new bulk string, or '\0'
       break;
+    }
+    default: { /* wrong input */
+      logging::log("wrong input: pos(" + to_string(index) + ") " +
+                       string(request),
+                   logging::ERROR);
+      return list<VdbOp>();
     }
     }
   }

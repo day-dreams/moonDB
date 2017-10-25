@@ -1,5 +1,6 @@
 #include "server/TcpServer.h"
 #include "InetAddr.h"
+#include "logging.h"
 #include <arpa/inet.h>
 #include <cstring>
 #include <netinet/in.h>

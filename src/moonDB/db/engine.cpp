@@ -1,9 +1,9 @@
 #include "db/engine.h"
-
-#include <glog/logging.h>
+#include "logging.h"
 #include <string>
 
 using std::string;
+using namespace moon::logging;
 
 namespace moon {
 
@@ -37,19 +37,21 @@ shared_ptr<BaseEngine> BaseEngine::onlyInstance(new BaseEngine());
 
 bool BaseEngine::add(string &key, string &value) {
   auto succeeded = storage.add(key, value);
-  if (succeeded)
-    LOG(INFO) << "添加元素\t" << key << ":" << value;
-  else
-    LOG(ERROR) << "添加错误\t" << key << ":" << value;
+  if (succeeded) {
+    log(string("添加元素") + key + string(":") + value, INFO);
+  } else {
+    log(string("添加错误") + key + string(":") + value, ERROR);
+  }
   return succeeded;
 }
 
 bool BaseEngine::del(string &key) {
   auto succeeded = storage.del(key);
-  if (succeeded)
-    LOG(INFO) << "删除元素\t" << key;
-  else
-    LOG(ERROR) << "删除失败\t" << key;
+  if (succeeded) {
+    log(string("删除元素\t") + key, INFO);
+  } else {
+    log(string("删除失败\t") + key, ERROR);
+  }
   return succeeded;
 }
 
