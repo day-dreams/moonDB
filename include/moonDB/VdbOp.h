@@ -22,8 +22,17 @@ using std::string;
 namespace moon {
 class VdbOp {
 public:
+  /*
+      get_opcode returns type of operation in u8.
+   */
   const u8 &get_opcode();
+
+  /*
+      get_parameters returns a string vector,which holds parameters of operation
+    in order
+   */
   const vector<string> &get_parameters();
+
   void set_opcode(u8 &op);
   void add_parameters(string &parameter);
   void add_parameters(string &&parameter);

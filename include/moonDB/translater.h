@@ -20,12 +20,12 @@ using std::list;
 
 namespace moon {
 
-class Translater {
-  /*
-    translater，负责下列转换工作：
+/*
+  translater，负责下列转换工作：
     resp(request) -> VdbOps
     VmMessages -> resp(response)
-  */
+*/
+class Translater {
 public:
   /*
      convert message from vm to resp(response)
@@ -33,7 +33,7 @@ public:
   string message_to_resp_response(VmMessage &message);
 
   /*
-   convert resp(request) to Vdbops
+     convert resp(request) to Vdbops
   */
   list<VdbOp> resp_request_to_vdbop(const char *const request);
 

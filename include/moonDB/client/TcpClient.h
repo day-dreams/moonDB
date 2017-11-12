@@ -18,12 +18,31 @@ public:
     ERROR_SEND_ConNotBuild,
     ERROR_SEND_Fail,
   };
-  TcpClient(string host, u16 port); /* 构造函数不建立连接 */
-  ~TcpClient();                     /* 析构函数负责关闭连接 */
 
-  int build_connection();         /* 与服务器建立连接 */
-  int send_request(string words); /* 发送请求 */
-  string recv_response();         /* 接收响应 */
+  /*
+   构造函数,不建立连接
+   */
+  TcpClient(string host, u16 port);
+
+  /*
+   析构函数,负责关闭连接
+  */
+  ~TcpClient();
+
+  /*
+   build_connection 与服务器建立连接
+  */
+  int build_connection();
+
+  /*
+    send_request 向连接发送请求
+   */
+  int send_request(string words);
+
+  /*
+    recv_response 从连接中接受响应
+   */
+  string recv_response();
 
 private:
   Ipv4Addr server_addr;

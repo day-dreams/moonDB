@@ -11,17 +11,18 @@ using std::map;
 
 namespace moon {
 
+/*
+  存储引擎
+*/
 class StorageMachine {
-  /*
-    存储引擎
-  */
 public:
-  static string NO_SUCH_ELE; /* do not modify this in code! */
   bool existed(string &key);
   bool add(string &key, string &value);
   bool del(string &key);
   string &get(string &key);
 
+public:
+  static string NO_SUCH_ELE; /* do not modify this in code! */
 private:
   map<string, string> storage;
 };

@@ -16,13 +16,13 @@ using std::list;
 
 namespace moon {
 
-class VmMessage {
-  /*
-    虚拟机返回的消息类
+/*
+  虚拟机返回的消息类
     INFO:       普通字符串
     ERROR:      有特定格式的error字符串
     INTEGERS:   数字字符串
-  */
+*/
+class VmMessage {
 public:
   enum MessageType {
     INFO,
@@ -35,29 +35,67 @@ public:
     ERROR_SET,
     ERROR_DEL
   };
-  VmMessage(MessageType type, string &details);  /* constructor */
-  VmMessage(MessageType type, string &&details); /* constructor,steal details */
-  VmMessage(MessageType type, char *details);    /* constructor */
-  bool is_error();                               /* 判断是否为error消息*/
+
+  /*
+    constructor
+   */
+  VmMessage(MessageType type, string &details);
+
+  /*
+    constructor,steal details
+   */
+  VmMessage(MessageType type, string &&details);
+
+  /*
+    constructor
+   */
+  VmMessage(MessageType type, char *details);
+
+  /*
+    is_error 判断本条消息是否为error消息
+   */
+  bool is_error();
+
+  /*
+    is_info 判断本条消息是否为info消息
+   */
   bool is_info();
-  const string &get_details();   /* 获取details */
-  const MessageType &get_type(); /* 获取type */
+
+  /*
+    get_details return const reference to inner details
+   */
+  const string &get_details();
+
+  /*
+    get_type return const reference to inner message type
+   */
+  const MessageType &get_type();
+
 private:
   MessageType type;
   string details;
 };
 
+/*
+  虚拟机类，抽象层次处于server(translater)和DataBase之间
+ */
 class VirtualMachine {
-  /*
-    虚拟机类，抽象层次处于server(translater)和DataBase之间
-  */
 public:
-  VmMessage
-  execute(VdbOp &operation); /* 保证operation是原子操作，执行操作，返回消息*/
-  list<VmMessage>
-  execute(list<VdbOp>
-              &operations); /*保证本次operations是原子操作，执行操作，返回消息*/
+  /*
+    唯一构造函数,在单例模式下获得对BaseEngine的智能指针
+   */
+
   VirtualMachine() { this->db = BaseEngine::getInstance(); }
+
+  /*
+    execute 执行传入的操作,返回消息,并保证本条operation的原子性
+  */
+  VmMessage execute(VdbOp &operation);
+
+  /*
+    execute 执行传入的一系列操作,返回消息,并保证每条operation的原子性
+  */
+  list<VmMessage> execute(list<VdbOp> &operations);
 
 private:
   shared_ptr<BaseEngine> db;

@@ -19,8 +19,15 @@ const int ERROR = 3;
 const int FATAL = 4;
 #define _LINE (__LINE__)
 #define _FILE (__FILE__)
+
+/*
+    log is a micro for logging
+ */
 #define log(detail, loglevel) _detail::_log(detail, _FILE, loglevel, _LINE);
 
+/*
+    set_print is a micro to set whether print log in stdout or not
+ */
 #define set_print(need_print) _detail::_set_print(need_print);
 
 namespace _detail {
@@ -30,6 +37,9 @@ namespace _detail {
 */
 string get_time_now();
 
+/*
+    _set_print 设置是否要打印日志到stdout
+ */
 void _set_print(bool flag);
 
 /*
