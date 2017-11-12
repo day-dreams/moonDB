@@ -79,6 +79,7 @@ public:
         full.unlock();
       auto result = make_shared<T>(_queue.front());
       _queue.pop();
+      lock.unlock();
       return result;
     } else {
       return shared_ptr<T>();
