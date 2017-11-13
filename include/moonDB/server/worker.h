@@ -61,10 +61,6 @@ public:
         pick some into internal
     if(internal中有超时客户连接)
         destroy them
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/cpp-v0.2
     poll socket status from internal,then try to serve them,
         if (err) close it;
         else if (peerclosed) close it;
@@ -74,7 +70,6 @@ public:
   void run();
 
 private:
-<<<<<<< HEAD
   list<ClientSock> internal_client_sockets;
   LockFreeQueue<int> &external_clints;
   VirtualMachine &vm;      /* 全局唯一的虚拟机对象  */
@@ -86,16 +81,10 @@ private:
 
   /* TODO: return multy mesages
     serve operations from  client
-=======
-  /*
-     TODO: return multy mesages
-     serve serves operations from client
->>>>>>> refs/remotes/origin/cpp-v0.2
   */
   list<VmMessage> serve(list<VdbOp> operations);
 
   /*
-<<<<<<< HEAD
        erase_client remove fd from internal_client_socksets,this
      will cause FIN handshake
   */
@@ -111,23 +100,10 @@ private:
              be changed
          2. sizeof can not get size of a returned array, it only regard
              it as a pure pointer,but not an array
-=======
-      get_poolfds return poolfd in c array,and store array length
-    in arrar_len.
-
-      NOTE:this is only used of for poll
-
-      NOTE:why return array_len by pointer
-        1. pinter but not reference can warm myself that array_len may
-            be changed
-        2. sizeof can not get size of a returned array, it only regard
-            it as a pure pointer,but not an array
->>>>>>> refs/remotes/origin/cpp-v0.2
   */
   pollfd *get_poolfds(size_t *array_len);
 
   /*
-<<<<<<< HEAD
        pick_more_client pickup client in external_client_sockset into
      internal_client_sockset as many as it can.
   */
@@ -140,34 +116,3 @@ private:
   void close_timeout_clients();
 };
 }
-=======
-      erase_client remove fd from internal_client_socksets,this
-    will cause FIN handshake
-   */
-  bool erase_client(int fd);
-
-  /*
-      pick_more_client pickup client in external_client_sockset into
-    internal_client_sockset as many as it can.
-   */
-  void Worker::pick_more_clients();
-
-  /*
-      close_timeout_clients remove timeout clients from internal_clien-
-    t_sockset
-   */
-  void Worker::close_timeout_clients();
-
-private:
-  list<ClientSock> internal_client_sockets;
-  LockFreeQueue<int> &external_clints;
-  VirtualMachine &vm;              /* 全局唯一的虚拟机对象  */
-  int maxclients;                  /* max num of client connection to serve */
-  seconds timeout_periods;         /* timeout  */
-  pollfd *old = nullptr;           /* old sockfds to poll */
-  pollfd *to_poll = nullptr;       /* new sockfds to poll */
-  bool readyread, peerclosed, err; /* status of socket */
-  bool pollfds_modified =
-      false; /* whether internal_client_sockets has been modified*/
-};
->>>>>>> refs/remotes/origin/cpp-v0.2
