@@ -42,7 +42,10 @@ Worker::Worker(LockFreeQueue<int> &external, int maxclients, VirtualMachine &vm)
   timeout_periods = seconds(60 * 60);
 }
 
-Worker::~Worker() { free(old); }
+Worker::~Worker() {
+  // free(old);
+  delete[] old;
+}
 
 list<VmMessage> Worker::serve(list<VdbOp> operations) {
   auto rv = vm.execute(operations);
@@ -137,7 +140,9 @@ void Worker::run() {
     }
     std::cout << "pollsize:" << pollsize << std::endl;
     auto num = poll(to_poll, pollsize, 50);
+
     if (num != 0) { // serve them
+
       for (int i = 0; i != pollsize; ++i) {
         bool readyread = to_poll[i].revents & POLLIN;
         bool peerclosed = to_poll[i].revents & POLLRDHUP;
@@ -159,21 +164,25 @@ void Worker::run() {
           log("prepare to serve a client", INFO);
           static char buffer[1024];
 
-          recv(to_poll[i].fd, buffer, 1024, 0);
+          auto num = recv(to_poll[i].fd, buffer, 1024, 0);
+          if (num < 0)
+            erase_client(to_poll[i].fd);
+          // cout << "recv num " << num << "\t buffer:" << buffer << endl;
 
           Translater translater;
           auto ops = translater.resp_request_to_vdbop(buffer);
           if (ops.empty()) {
-            log("nothing to do for client " + to_poll[i].fd, INFO);
+            log(string("nothing to do for client ") + to_string(to_poll[i].fd),
+                INFO);
             continue;
           }
+          log("serving client " + to_string(to_poll[i].fd), INFO);
           auto messages = serve(ops);
           string response;
           for (auto &message : messages)
             response += translater.message_to_resp_response(message);
 
           send(to_poll[i].fd, response.c_str(), response.size(), 0);
-          log("serve client " + to_string(to_poll[i].fd), INFO);
         }
       }
     }
