@@ -53,18 +53,18 @@ public:
   Worker(LockFreeQueue<int> &external, int maxclients, VirtualMachine &vm);
   ~Worker();
 
-  /* event loop:
+  /*
+    event loop:
 
     while(true){
-
     if(external中有更多的客户连接待服务)
         pick some into internal
-
     if(internal中有超时客户连接)
         destroy them
-
-    select readysocket from internal
-    serve them,and refresh timeout
+    poll socket status from internal,then try to serve them,
+        if (err) close it;
+        else if (peerclosed) close it;
+        else if (ready) serve it.
     }
   */
   void run();
@@ -76,13 +76,43 @@ private:
   int maxclients;          /* max num of client connection to serve */
   seconds timeout_periods; /* timeout  */
   pollfd *old = nullptr;   /* sockfds to poll */
+  pollfd *to_poll = nullptr;
+  bool pollfds_modified = false;
 
   /* TODO: return multy mesages
-  serve operations from  client
+    serve operations from  client
   */
   list<VmMessage> serve(list<VdbOp> operations);
 
-  /* udpate poolfd */
-  pollfd *get_poolfds();
+  /*
+       erase_client remove fd from internal_client_socksets,this
+     will cause FIN handshake
+  */
+  bool erase_client(int fd);
+
+  /*
+      get_poolfds return poolfd in c array,and store array length
+    in arrar_len.
+       NOTE:this is only used of for poll
+
+       NOTE:why return array_len by pointer
+         1. pinter but not reference can warm myself that array_len may
+             be changed
+         2. sizeof can not get size of a returned array, it only regard
+             it as a pure pointer,but not an array
+  */
+  pollfd *get_poolfds(size_t *array_len);
+
+  /*
+       pick_more_client pickup client in external_client_sockset into
+     internal_client_sockset as many as it can.
+  */
+  void pick_more_clients();
+
+  /*
+       close_timeout_clients remove timeout clients from internal_clien-
+     t_sockset
+  */
+  void close_timeout_clients();
 };
 }

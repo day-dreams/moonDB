@@ -5,13 +5,14 @@
 #include <chrono>
 #include <cstdlib>
 #include <list>
+#include <string>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
-using std::list;
-using std::chrono::time_point;
 using std::chrono::system_clock;
+using std::chrono::time_point;
+using std::list;
 using namespace moon::logging;
 
 namespace moon {
@@ -48,72 +49,113 @@ list<VmMessage> Worker::serve(list<VdbOp> operations) {
   return rv;
 }
 
-pollfd *Worker::get_poolfds() {
+bool Worker::erase_client(int fd) {
+  auto ite = internal_client_sockets.begin();
+  while (ite != internal_client_sockets.end() && ite->get_sock() != fd)
+    ++ite;
+  if (ite == internal_client_sockets.end())
+    return false;
+  pollfds_modified = true;
+  internal_client_sockets.erase(ite);
+  return true;
+}
+
+pollfd *Worker::get_poolfds(size_t *array_len) {
   if (old != nullptr) {
-    free(old);
+    delete[] old;
   }
-  pollfd *rv =
-      (pollfd *)malloc(sizeof(pollfd) * internal_client_sockets.size());
+
+  auto size = internal_client_sockets.size();
+  pollfd *rv = new pollfd[size];
   auto num = 0;
+
   for (auto ite = internal_client_sockets.begin();
        ite != internal_client_sockets.end(); ++ite, ++num) {
     rv[num].fd = ite->get_sock();
     rv[num].events = POLLIN;
   }
+
   old = rv;
+  *array_len = num;
+  pollfds_modified = false;
   return rv;
+}
+
+void Worker::close_timeout_clients() {
+  using std::string;
+  using std::cout;
+  using std::endl;
+  cout << "current socks:\t";
+  for (auto begin = internal_client_sockets.begin();
+       begin != internal_client_sockets.end(); ++begin) {
+    auto timeout = begin->is_timeout(timeout_periods);
+    cout << begin->get_sock() << "\t";
+    if (timeout) {
+      begin->closesock();
+      internal_client_sockets.erase(begin);
+      pollfds_modified = true;
+    }
+  }
+  cout << endl;
+}
+
+void Worker::pick_more_clients() {
+  while (internal_client_sockets.size() < maxclients) {
+    if (internal_client_sockets.size() == 0) { // init pop,might block
+      auto new_one = external_clints.pop();
+      cout << new_one << endl;
+      log("pick up first client,sock " + to_string(new_one), INFO);
+      internal_client_sockets.push_back(ClientSock(new_one));
+    } else {
+      auto new_one = external_clints.try_pop();
+      if (new_one.get() == nullptr)
+        break;
+      cout << new_one << endl;
+      log("pick up another client,sock " + to_string(*new_one), INFO);
+
+      internal_client_sockets.push_back(ClientSock(*new_one));
+    }
+    pollfds_modified = true;
+  }
 }
 
 void Worker::run() {
   // TODO: test all logic!
-  pollfd *to_poll = nullptr;
-  bool modified = false;
 
   while (true) {
     // pick up more clients
-    while (internal_client_sockets.size() < maxclients) {
-      if (internal_client_sockets.size() == 0) { // init pop,might block
-        auto new_one = external_clints.pop();
-        cout << new_one << endl;
-        log("pick up first client,sock " + to_string(new_one), INFO);
-        internal_client_sockets.push_back(ClientSock(new_one));
-      } else {
-        auto new_one = external_clints.try_pop();
-        if (new_one.get() == nullptr)
-          break;
-        cout << new_one << endl;
-        log("pick up another client,sock " + to_string(*new_one), INFO);
-
-        internal_client_sockets.push_back(ClientSock(*new_one));
-      }
-      modified = true;
-    }
+    pick_more_clients();
 
     // close some timeout sockets
-    for (auto begin = internal_client_sockets.begin();
-         begin != internal_client_sockets.end(); ++begin) {
-      auto timeout = begin->is_timeout(timeout_periods);
-      if (timeout) {
-        begin->closesock();
-        internal_client_sockets.erase(begin);
-        modified = true;
-      }
-    }
+    close_timeout_clients();
 
-    /* TODO:
-        serve them,and refresh timeout
-     */
     if (internal_client_sockets.size() == 0) // no client to serve
       continue;
-    if (modified) { // update fdset, this will free old poolfds
-      to_poll = get_poolfds();
+    size_t pollsize = 0;
+    if (pollfds_modified) { // update fdset, this will free old poolfds
+      to_poll = get_poolfds(&pollsize);
     }
-    auto pollsize = sizeof(to_poll) / sizeof(struct pollfd);
+    std::cout << "pollsize:" << pollsize << std::endl;
     auto num = poll(to_poll, pollsize, 50);
     if (num != 0) { // serve them
       for (int i = 0; i != pollsize; ++i) {
         bool readyread = to_poll[i].revents & POLLIN;
-        if (readyread) {
+        bool peerclosed = to_poll[i].revents & POLLRDHUP;
+        bool err = to_poll[i].revents & POLLERR;
+
+        if (peerclosed) {
+
+          log("peer has shutdown connection", INFO);
+          erase_client(to_poll[i].fd);
+          continue;
+        } else if (err) {
+
+          log("something err happend,tend to close the connection", ERROR);
+          erase_client(to_poll[i].fd);
+          continue;
+
+        } else if (readyread) {
+
           log("prepare to serve a client", INFO);
           static char buffer[1024];
 
@@ -137,4 +179,4 @@ void Worker::run() {
     }
   }
 }
-}
+} // namespace moon
