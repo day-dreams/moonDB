@@ -2,11 +2,13 @@
 #include "types.h"
 
 namespace moon {
-u8 OPCODE::str_to_opcode(const char *begin, const char *end, i32 &size_read) {
+u8 OPCODE::str_to_opcode(const char *begin, const char *end, i32 *size_read) {
   auto ite = begin;
-  size_read = 0;
+  if (size_read != nullptr)
+    *size_read = 0;
   while (*ite != '\r') {
-    ++size_read;
+    if (size_read != nullptr)
+      *size_read = (*size_read) + 1;
     ++ite;
   }
   switch (*begin) {
@@ -20,4 +22,4 @@ u8 OPCODE::str_to_opcode(const char *begin, const char *end, i32 &size_read) {
     return OPCODE::EXISTED;
   }
 }
-}
+} // namespace moon

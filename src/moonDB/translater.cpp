@@ -1,11 +1,11 @@
 #include "translater.h"
 #include "logging.h"
+#include "opcode.h"
 #include "types.h"
 #include <cstdlib>
 #include <cstring>/* for strlen */
 #include <iostream>
 #include <string>
-
 using std::cout;
 using std::string;
 using std::to_string;
@@ -31,15 +31,17 @@ string Translater::message_to_resp_response(VmMessage &message) {
   }
 }
 
-i32 str_to_int(const char *begin, const char *end, i32 &size_read) {
+i32 str_to_int(const char *begin, const char *end, i32 *size_read) {
   /*
     base=10;
     如果遇到非数字字符串,退出
    */
   i32 x = 0;
-  size_read = 0;
+  if (size_read != nullptr)
+    size_read = 0;
   while (begin != end && *begin <= '9' && *begin >= '0') {
-    ++size_read;
+    if (size_read != nullptr)
+      ++size_read;
     x = x * 10 + (*begin - '0');
     ++begin;
   }
@@ -47,62 +49,119 @@ i32 str_to_int(const char *begin, const char *end, i32 &size_read) {
 }
 
 list<VdbOp> Translater::resp_request_to_vdbop(const char *const request) {
-  /* 这里的输入参数是c_str,因为sockets只能支持c_str,再转化为string就太复杂了 */
-  list<VdbOp> r;
-  i32 index = 0;
-  i32 array_len = 0;
-  i32 size_read = 0; /* str 转 int时读取了多少字符 */
-  i32 args_read = 0; /* 当前命令已经读了过少个参数 */
-  bool is_reading_opcode = true;
-  // cout << __LINE__ << index << "\n";
+  list<VdbOp> rv;
+  size_t begin = 0;
+  size_t array_length = 0;
+  size_t operator_length = 0;
+  size_t parameter_length = 0;
 
-  while (request[index] != '\0') {
-    // cout << __LINE__ << index << "\n";
-    switch (request[index]) {
-    case '*': { /* head of an array */
-      auto begin = index + 1;
-      auto end = begin;
-      while (request[end] != '\r') {
-        ++end;
+  /* begin of length used for array_len ,operator_len ,parameter_len */
+  size_t length_begin = 0;
+  /* begin of length used for operator,parameter */
+  size_t string_begin = 0;
+
+  while (state != State::over) {
+
+    switch (state) {
+
+    case State::init:
+      if (request[begin] != '*')
+        return rv;
+      else {
+        length_begin = ++begin;
+        state = State::array_len;
       }
-      // now the interger is at [begin,end], end+1 is at '\r'
-      array_len = str_to_int(request + begin, request + end, size_read);
-      index = end + 2; /* skip '\r\n' */
-      /* now index is at begging of a command,or '\0'*/
       break;
-    }
-    case '$': { /* readign some part of a command */
-      auto begin = index + 1;
-      auto end = begin;
-      while (request[end] != '\r') {
-        ++end;
-      }
-      // now integer is in [begin,end], end+1 may not  at '\r'
-      auto bulk_str_len = str_to_int(request + begin, request + end, size_read);
-      index = begin + size_read +
-              2; // now index is at a new bulk string(size:bulk_str_len)
-      if (is_reading_opcode) {
-        is_reading_opcode = false;
-        r.push_back(VdbOp());
-        auto opcode = OPCODE::str_to_opcode(
-            request + index, request + index + bulk_str_len, size_read);
-        r.back().set_opcode(opcode);
+
+    case State::array_len:
+      if (request[begin] == '\r') { /* reach end of array_len */
+        array_length =
+            str_to_int(request + length_begin, request + begin, nullptr);
+        state = State::operator_len;
+        begin += 3; /* \r\n$ */
+        length_begin = begin;
       } else {
-        auto str = request + index;
-        r.back().add_parameters(string(str, bulk_str_len));
+        ++begin;
       }
-      index = index + bulk_str_len +
-              2; // now index is at a new bulk string, or '\0'
       break;
-    }
-    default: { /* wrong input */
-      logging::log("wrong input: pos(" + to_string(index) + ") " +
-                       string(request),
-                   logging::ERROR);
-      return list<VdbOp>();
-    }
+
+    case State::operator_len:
+      if (request[begin] == '\r') {
+        operator_length =
+            str_to_int(request + length_begin, request + begin, nullptr);
+        state = State::operator_str;
+        begin += 2;
+        string_begin = begin;
+      } else {
+        ++begin;
+      }
+      break;
+
+    case State::operator_str:
+      if (begin - string_begin < operator_length) {
+        ++begin;
+      } else { // TODO:we got a whole operator string,[string_begin,begin)
+
+        rv.push_back(VdbOp());
+        u8 opcode = OPCODE::str_to_opcode(request + string_begin,
+                                          request + begin, nullptr);
+        rv.back().set_opcode(opcode);
+
+        begin += 3;
+        state = State::parameter_len;
+        length_begin = begin;
+      }
+      break;
+
+    case State::parameter_len:
+      if (request[begin] == '\r') {
+        parameter_length =
+            str_to_int(request + length_begin, request + begin, nullptr);
+        begin += 2;
+        state = State::parameter_str;
+        string_begin = begin;
+      } else {
+        ++begin;
+      }
+      break;
+
+    case State::parameter_str:
+      if (begin - string_begin < parameter_length) {
+        ++begin;
+      } else { // TODO:we got a whole parameter string,[string_begin,begin)
+        rv.back().add_parameters(
+            string(request + string_begin, request + begin));
+        begin += 2;
+        state = State::branch;
+      }
+      break;
+
+    case State::branch:
+      if (request[begin] == '\0')
+        state = State::over;
+      else if (request[begin] == '$') {
+        // begin of another paramter len
+        ++begin;
+        length_begin = begin;
+        state = State::parameter_len;
+      } else if (request[begin] == '*') {
+        // another array, we dont support this at now
+        ++begin;
+        state = State::array_len;
+      } else {
+        // wrong format of resp string, impossible
+        state = State::over;
+      }
+      break;
+
+    case State::over:
+    default:
+      break;
     }
   }
-  return r;
+
+  state = State::init; /* for next format */
+  return rv;
 }
-}
+
+} // namespace moon

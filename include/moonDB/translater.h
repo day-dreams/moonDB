@@ -40,7 +40,20 @@ public:
   /* TODO:
     错误的resp协议字符串输入的处理逻辑
   */
+
+private:
+  enum State {
+    init,
+    array_len,
+    operator_len,
+    operator_str,
+    parameter_len,
+    parameter_str,
+    branch,
+    over
+  };
+  State state = init;
 };
-}
+} // namespace moon
 
 #endif

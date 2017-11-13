@@ -85,9 +85,9 @@ pollfd *Worker::get_poolfds(size_t *array_len) {
 }
 
 void Worker::close_timeout_clients() {
-  using std::string;
   using std::cout;
   using std::endl;
+  using std::string;
   cout << "current socks:\t";
   for (auto begin = internal_client_sockets.begin();
        begin != internal_client_sockets.end(); ++begin) {
@@ -124,7 +124,7 @@ void Worker::pick_more_clients() {
 
 void Worker::run() {
   // TODO: test all logic!
-
+  size_t pollsize = 0;
   while (true) {
     // pick up more clients
     pick_more_clients();
@@ -134,7 +134,6 @@ void Worker::run() {
 
     if (internal_client_sockets.size() == 0) // no client to serve
       continue;
-    size_t pollsize = 0;
     if (pollfds_modified) { // update fdset, this will free old poolfds
       to_poll = get_poolfds(&pollsize);
     }
