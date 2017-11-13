@@ -12,7 +12,7 @@ using namespace moon;
 void echo(int clientscok, Ipv4Addr addr) {
   char buffer[1024];
   memset(buffer, '\0', 1024);
-  auto n = recv(clientscok, buffer,   1024, 0);
+  auto n = recv(clientscok, buffer, 1024, 0);
   cout << "from client:"
        << addr.get_ip() + ":" + to_string(addr.get_port()) + " " +
               string(buffer)
