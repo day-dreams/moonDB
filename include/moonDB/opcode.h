@@ -5,9 +5,11 @@
 
 #include <cstring>
 
-namespace moon {
+namespace moon
+{
 
-namespace OPCODE {
+namespace OPCODE
+{
 const u8 SET = 0;     /* [set key value]，添加/覆盖一个key-value */
 const u8 GET = 1;     /* [get key]，获取key的value */
 const u8 DEL = 2;     /* [del key]，删除key */

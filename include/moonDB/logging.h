@@ -11,8 +11,10 @@
 #include <string>
 using namespace std;
 
-namespace moon {
-namespace logging {
+namespace moon
+{
+namespace logging
+{
 const int DEBUG = 1;
 const int INFO = 2;
 const int ERROR = 3;
@@ -30,7 +32,8 @@ const int FATAL = 4;
  */
 #define set_print(need_print) _detail::_set_print(need_print);
 
-namespace _detail {
+namespace _detail
+{
 
 /*
     get_time_now 获取时间字符串并返回

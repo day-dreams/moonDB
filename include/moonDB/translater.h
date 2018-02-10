@@ -15,44 +15,46 @@
 
 #include <list>
 #include <string>
-using std::string;
 using std::list;
+using std::string;
 
-namespace moon {
+namespace moon
+{
 
 /*
   translater，负责下列转换工作：
     resp(request) -> VdbOps
     VmMessages -> resp(response)
 */
-class Translater {
-public:
-  /*
-     convert message from vm to resp(response)
-  */
-  string message_to_resp_response(VmMessage &message);
+class Translater
+{
+      public:
+	/*
+	   convert message from vm to resp(response)
+	*/
+	string message_to_resp_response(VmMessage &message);
 
-  /*
-     convert resp(request) to Vdbops
-  */
-  list<VdbOp> resp_request_to_vdbop(const char *const request);
+	/*
+	   convert resp(request) to Vdbops
+	*/
+	list<VdbOp> resp_request_to_vdbop(const char *const request);
 
-  /* TODO:
-    错误的resp协议字符串输入的处理逻辑
-  */
+	/* TODO:
+	  错误的resp协议字符串输入的处理逻辑
+	*/
 
-private:
-  enum State {
-    init,
-    array_len,
-    operator_len,
-    operator_str,
-    parameter_len,
-    parameter_str,
-    branch,
-    over
-  };
-  State state = init;
+      private:
+	enum State {
+		init,
+		array_len,
+		operator_len,
+		operator_str,
+		parameter_len,
+		parameter_str,
+		branch,
+		over
+	};
+	State state = init;
 };
 } // namespace moon
 
